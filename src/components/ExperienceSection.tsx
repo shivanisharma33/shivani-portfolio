@@ -5,7 +5,7 @@ import { Briefcase, GraduationCap } from "lucide-react";
 const experiences = [
   {
     year: "2025 — Present",
-    role: "Full Stack Developer",
+    role: "Front-end Developer",
     company: "Mining Discovery — Mohali, Punjab",
     description: "Developed responsive, data-driven dashboards. Optimized performance and implemented scroll-based animations using GSAP and Framer Motion. Collaborated with backend developers and designers for seamless integration.",
     icon: Briefcase,
@@ -47,7 +47,7 @@ const ExperienceSection = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
   return (
