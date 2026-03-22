@@ -12,135 +12,166 @@ const navItems = [
 ];
 
 const FloatingNavbar = () => {
-  const [visible, setVisible] = useState(true);
-  const [lastScroll, setLastScroll] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const current = window.scrollY;
-      // Keep navbar visible if mobile menu is open, otherwise hide on scroll down
-      if (current > 100 && current > lastScroll && !mobileMenuOpen) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-      setLastScroll(current);
+      setScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScroll, mobileMenuOpen]);
-
-  // Close menu when window resizes to desktop to prevent state lock bugs
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Automatically lock background scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mobileMenuOpen]);
 
   const scrollTo = (href: string) => {
     setMobileMenuOpen(false);
     const el = document.querySelector(href);
     if (el) {
-      const offset = 100; // Adjust for navbar height clearance
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
+      const offset = 100;
+      const elementPosition = el.getBoundingClientRect().top - document.body.getBoundingClientRect().top;
       window.scrollTo({
-        top: offsetPosition,
+        top: elementPosition - offset,
         behavior: "smooth"
       });
     }
   };
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.nav
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -100, opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          // CRITICAL FIX: lg:right-auto prevents CSS conflicts on desktop which break the layout.
-          className="fixed top-4 lg:top-6 left-4 right-4 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 lg:w-max z-[100] rounded-2xl lg:rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden"
-        >
-          {/* Header Bar */}
-          <div className="flex items-center justify-between px-6 py-4 lg:px-8 lg:py-3 relative z-20 w-full">
-            <button onClick={() => scrollTo("#hero")} className="text-red-500 font-black text-xl lg:text-3xl font-mono tracking-tighter hover:scale-105 transition-transform shrink-0">
-              &lt;SD/&gt;
-            </button>
-            
-            {/* Desktop Links (Hidden on phones & tablets) */}
-            <div className="hidden lg:flex items-center gap-1 ml-16 shrink-0">
-              {navItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => scrollTo(item.href)}
-                  className="px-5 py-2.5 text-sm font-bold text-white/50 hover:text-white transition-colors rounded-full hover:bg-white/10 font-mono tracking-widest uppercase outline-none"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+    <>
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 w-full ${
+          scrolled && !mobileMenuOpen ? "bg-black/80 backdrop-blur-2xl py-3 shadow-[0_4px_30px_rgba(0,0,0,0.8)]" : "bg-transparent py-4 sm:py-6"
+        }`}
+      >
+        {/* Subtle Bottom Border - Only visible when scrolling and menu is closed */}
+        <div className={`absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-opacity ${scrolled && !mobileMenuOpen ? 'opacity-100' : 'opacity-0'}`} />
+        
+        {/* Subtle Red Center Glow on Border */}
+        {scrolled && !mobileMenuOpen && (
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/4 h-[1px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50" />
+        )}
 
-            {/* Mobile Menu Toggle (Visible on phones & tablets) */}
-            <button 
-              className="lg:hidden p-2 -mr-2 text-white/80 hover:text-white transition-colors active:scale-95 shrink-0"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 flex items-center justify-between w-full h-full relative z-[101]">
+          
+          {/* Left - Geometric Logo Component */}
+          <button 
+            onClick={() => scrollTo("#hero")} 
+            className="group flex items-center gap-3 outline-none shrink-0"
+          >
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-red-600/20 group-hover:border-red-500/50 transition-all duration-500 group-hover:rotate-[15deg] shadow-lg">
+              <span className="text-white group-hover:text-red-500 font-black font-mono tracking-tighter transition-colors text-lg">SD</span>
+            </div>
+            <span className="text-white font-extrabold tracking-widest text-sm uppercase hidden sm:block pointer-events-none drop-shadow-md shrink-0">
+               Shivani<span className="text-red-600 glow-text">.</span>
+            </span>
+          </button>
+
+          {/* Center - Minimalist Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-10 shrink-0">
+            {navItems.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => scrollTo(item.href)}
+                className="relative group outline-none py-2"
+              >
+                <span className="text-[11px] font-black text-white/50 group-hover:text-white uppercase tracking-[0.25em] transition-colors duration-300 drop-shadow-sm">
+                  {item.label}
+                </span>
+                {/* Hover Underline Tiny Dot */}
+                <div className="absolute -bottom-1 left-1/2 w-1.5 h-1.5 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 -translate-x-1/2 transition-all duration-300 shadow-[0_0_10px_rgba(220,38,38,0.8)]" />
+              </button>
+            ))}
           </div>
 
-          {/* Mobile Expandable Links */}
-          <AnimatePresence>
-            {mobileMenuOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="lg:hidden relative z-10 w-full"
-              >
-                <div className="flex flex-col items-center px-4 pb-6 pt-2 w-full">
-                  <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4" />
-                  
-                  {navItems.map((item, i) => (
-                    <motion.button
-                      key={item.label}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.05 + i * 0.05 }}
-                      onClick={() => scrollTo(item.href)}
-                      className="w-full py-4 text-sm font-bold text-white/60 hover:text-red-500 hover:bg-white/5 transition-all rounded-xl font-mono tracking-widest uppercase active:scale-[0.98]"
-                    >
-                      {item.label}
-                    </motion.button>
-                  ))}
-                  
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="w-full flex justify-center mt-6"
-                  >
-                    <div className="w-12 h-1.5 bg-red-600 rounded-full" />
-                  </motion.div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Right - Hire Me Button & Mobile Hamburger */}
+          <div className="flex items-center gap-4 shrink-0">
+            <button 
+              onClick={() => scrollTo("#contact")} 
+              className="hidden lg:flex items-center justify-center px-8 py-3 rounded-full bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-colors outline-none shadow-lg hover:shadow-[0_0_20px_rgba(220,38,38,0.4)]"
+            >
+              Hire Me
+            </button>
 
-        </motion.nav>
-      )}
-    </AnimatePresence>
+            {/* Mobile Hamburger toggle */}
+            <button 
+              className="lg:hidden w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-red-500 hover:border-red-500/50 transition-colors active:scale-95 outline-none shadow-md backdrop-blur-md"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Full Screen Vertical Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, clipPath: "circle(0% at top right)" }}
+            animate={{ opacity: 1, clipPath: "circle(150% at top right)" }}
+            exit={{ opacity: 0, clipPath: "circle(0% at top right)" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            // Fixes absolute screen constraints with 100dvh and allows content scrolling
+            className="fixed inset-0 w-full h-[100dvh] z-[90] bg-black/95 backdrop-blur-2xl flex flex-col px-6 overflow-y-auto overflow-x-hidden pt-28 pb-10"
+          >
+            {/* Ambient Background Glow */}
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-red-600/10 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="flex flex-col gap-6 relative z-10 w-full max-w-sm mx-auto">
+              {navItems.map((item, i) => (
+                <motion.button
+                  key={item.label}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease: "easeOut" }}
+                  onClick={() => scrollTo(item.href)}
+                  className="group flex flex-col items-center w-full outline-none py-1"
+                >
+                  {/* Resized typography to naturally fit on small vertical windows like iPhone SE */}
+                  <span className="text-[2.2rem] sm:text-5xl font-black text-white/50 group-hover:text-white group-active:text-red-500 transition-colors duration-300 uppercase tracking-tighter">
+                    {item.label}
+                  </span>
+                  <span className="h-1 w-0 group-hover:w-16 group-active:bg-red-500 bg-red-600 rounded-full mt-1.5 transition-all duration-500 shadow-[0_0_15px_rgba(220,38,38,0.5)]" />
+                </motion.button>
+              ))}
+
+              <motion.button
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + navItems.length * 0.05, duration: 0.4 }}
+                onClick={() => scrollTo("#contact")}
+                className="mt-8 px-8 py-4 rounded-xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs sm:text-sm hover:bg-red-600 hover:text-white transition-all duration-300 shadow-xl mx-auto w-full outline-none active:scale-95"
+              >
+                Hire Me Now
+              </motion.button>
+            </div>
+            
+            {/* Minimalist Watermark on bottom of mobile menu */}
+            <div className="mt-auto pt-10 flex justify-center opacity-30 pointer-events-none w-full relative z-10">
+              <span className="font-mono tracking-widest text-[10px] uppercase text-white/50">
+                Crafted by <span className="text-red-500">Shivani</span>
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
