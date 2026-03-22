@@ -1,20 +1,20 @@
 import { motion } from "framer-motion";
 
 const CodeWindow = () => (
+  // Main Desktop animated wrapper, but simplified transforms for better mobile performance
   <motion.div
-    initial={{ opacity: 0, scale: 0.9, rotateY: -15, rotateX: 5 }}
+    initial={{ opacity: 0, scale: 0.95, rotateY: 0, rotateX: 0 }}
     animate={{ opacity: 1, scale: 1, rotateY: -5, rotateX: 5 }}
-    transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+    transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
     className="relative w-full max-w-lg mx-auto lg:ml-auto xl:mr-0 z-20 mt-12 lg:mt-0"
     style={{ perspective: "1000px" }}
   >
-    {/* Glow behind the window */}
-    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/30 to-red-900/20 rounded-2xl blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+    {/* Glow behind the window - Static on mobile to prevent crashes, pulsed on desktop */}
+    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 to-red-900/10 rounded-2xl blur-2xl sm:blur-3xl hidden sm:block animate-pulse" style={{ animationDuration: '4s' }} />
+    <div className="absolute inset-0 bg-gradient-to-tr from-red-600/20 to-red-900/10 rounded-2xl blur-xl sm:hidden" />
     
-    <motion.div 
-      className="relative rounded-2xl border border-white/10 bg-black/80 backdrop-blur-2xl overflow-hidden shadow-2xl"
-      animate={{ y: [-8, 8, -8] }}
-      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+    <div 
+      className="relative rounded-2xl border border-white/10 bg-black/90 sm:backdrop-blur-2xl overflow-hidden shadow-2xl"
     >
       {/* Window Header */}
       <div className="flex items-center px-4 py-3 border-b border-white/5 bg-white/5 gap-2">
@@ -25,7 +25,7 @@ const CodeWindow = () => (
       </div>
       
       {/* Window Body */}
-      <div className="p-4 sm:p-6 text-xs sm:text-sm font-mono text-white/80 overflow-x-auto">
+      <div className="p-4 sm:p-6 text-xs sm:text-sm font-mono text-white/80 overflow-x-auto scroller-clean">
         <div className="flex gap-4">
           <span className="text-red-500">const</span> 
           <span className="text-white/90">developer</span> 
@@ -49,18 +49,14 @@ const CodeWindow = () => (
         </div>
       </div>
       
-      {/* Floating Elements (Visible on all screens!) */}
-      <motion.div className="flex absolute -right-2 sm:-right-6 -top-6 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-red-500/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-2xl sm:text-3xl shadow-xl z-30"
-        animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-      >
+      {/* Floating Elements (Visible on all screens, but static floating on mobile for performance) */}
+      <div className="flex absolute -right-2 sm:-right-6 -top-6 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-red-500/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-2xl sm:text-3xl shadow-xl z-30 animate-float">
         ⚛️
-      </motion.div>
-      <motion.div className="flex absolute -left-4 sm:-left-8 bottom-16 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-red-600/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-2xl sm:text-3xl shadow-xl z-30"
-        animate={{ y: [0, 15, 0], rotate: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
-      >
+      </div>
+      <div className="flex absolute -left-4 sm:-left-8 bottom-16 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-red-600/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-2xl sm:text-3xl shadow-xl z-30 animate-float" style={{ animationDelay: '1s' }}>
         🎨
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   </motion.div>
 );
 
@@ -70,9 +66,9 @@ const TextGenerateEffect = ({ text, className = "" }: { text: string; className?
       {text.split("").map((char, i) => (
         <motion.span
           key={i}
-          initial={{ opacity: 0, filter: "blur(10px)", y: 15 }}
-          animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-          transition={{ delay: 0.04 * i, duration: 0.4, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 * i, duration: 0.3, ease: "easeOut" }}
         >
           {char === " " ? "\u00A0" : char}
         </motion.span>
@@ -83,57 +79,41 @@ const TextGenerateEffect = ({ text, className = "" }: { text: string; className?
 
 const HeroSection = () => {
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden bg-black pb-20 pt-32 lg:py-20">
-      {/* Luxurious Abstract Background */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay z-0 pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden bg-black pb-20 pt-32 lg:py-20 w-full">
       
-      {/* Glow Orbs */}
-      <motion.div
-        className="absolute top-[10%] right-[10%] w-[500px] h-[500px] rounded-full bg-red-600/20 blur-[120px] pointer-events-none"
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-[10%] left-[5%] w-[600px] h-[600px] rounded-full bg-red-900/20 blur-[150px] pointer-events-none"
-        animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-      />
+      {/* CSS Grid Pattern - Ultra efficient layout */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_80%,transparent_100%)] pointer-events-none" />
       
-      {/* Animated Floating Particles (Visible everywhere now) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none block">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
+      {/* Background Glow Orbs - STATIC to physically prevent GPU crashes on cheap phones */}
+      <div className="absolute top-[10%] right-[10%] w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] rounded-full bg-red-600/15 blur-[60px] sm:blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[5%] w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] rounded-full bg-red-900/15 blur-[80px] sm:blur-[150px] pointer-events-none" />
+      
+      {/* Animated Floating Particles (CSS only for zero lag, visible globally) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {[...Array(8)].map((_, i) => (
+          <div
             key={i}
-            className="absolute rounded-full bg-gradient-to-t from-red-600/40 to-transparent"
+            className="absolute rounded-full bg-gradient-to-t from-red-600/40 to-transparent animate-float"
             style={{ 
               width: Math.random() * 4 + 2 + 'px', 
               height: Math.random() * 4 + 2 + 'px',
-              left: `${Math.random() * 100}%`, 
-              top: `${Math.random() * 100}%` 
+              left: `${Math.random() * 90 + 5}%`, 
+              top: `${Math.random() * 90 + 5}%`,
+              animationDuration: `${Math.random() * 4 + 4}s`,
+              animationDelay: `${Math.random() * 2}s`
             }}
-            animate={{
-              y: [0, Math.random() * -100 - 50],
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{ duration: Math.random() * 5 + 5, repeat: Infinity, ease: "linear", delay: Math.random() * 5 }}
           />
         ))}
       </div>
 
-      <div className="section-container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+      <div className="section-container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full max-w-[100vw] overflow-x-hidden">
         {/* Left - Text */}
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="z-10"
-        >
+        <div className="z-10 mt-8 sm:mt-0">
           <motion.div
             className="inline-flex items-center px-4 py-2 rounded-full border border-red-500/30 bg-red-500/10 mb-8 backdrop-blur-md"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
           >
             <span className="relative flex h-2 w-2 mr-3 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
@@ -145,76 +125,52 @@ const HeroSection = () => {
           </motion.div>
 
           {/* Fully Responsive Header Typography */}
-          <h1 className="text-[3.5rem] leading-[1.1] sm:text-6xl lg:text-7xl font-bold mb-4 tracking-tight">
+          <h1 className="text-[3rem] leading-[1.1] sm:text-6xl lg:text-7xl font-bold mb-4 tracking-tight w-full drop-shadow-lg">
             <TextGenerateEffect text="Hi, I'm" />
             <br />
-            <span className="text-gradient-red glow-text font-extrabold pb-2 inline-block relative">
+            <span className="text-red-500 glow-text font-black pb-2 inline-block relative pr-2">
               <TextGenerateEffect text="Shivani Dixit" />
-              <motion.div 
-                className="absolute -bottom-1 left-0 h-1 sm:h-1.5 bg-gradient-to-r from-red-600 to-transparent"
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ delay: 1.5, duration: 1 }}
-              />
+              <div className="absolute -bottom-1 left-0 h-1 sm:h-1.5 bg-gradient-to-r from-red-600 to-transparent w-full opacity-60 rounded-full" />
             </span>
           </h1>
 
-          <motion.h2
-            className="text-xl sm:text-3xl text-white/80 font-light mb-6 tracking-wide"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
+          <h2 className="text-xl sm:text-3xl text-white/80 font-light mb-6 tracking-wide drop-shadow-md">
             Front-end Developer
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            className="text-white/60 max-w-lg text-base sm:text-lg mb-8 md:mb-10 leading-relaxed font-light"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.6 }}
-          >
-            Building responsive, interactive & visually engaging web experiences with React.js, modern animations, and pixel-perfect design.
-          </motion.p>
+          <p className="text-white/60 max-w-lg text-base sm:text-lg mb-8 md:mb-10 leading-relaxed font-light">
+            Building responsive, interactive & visually engaging web experiences with React.js, modern designs, and pixel-perfect architecture.
+          </p>
 
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 flex-wrap"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.6 }}
-          >
+          <div className="flex flex-col sm:flex-row gap-4 flex-wrap w-full pr-4 sm:pr-0">
             <button
               onClick={() => document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" })}
-              className="gradient-red text-white w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-xl font-bold text-center hover:scale-105 transition-all glow-border shadow-lg shadow-red-500/25 uppercase tracking-widest text-sm"
+              className="gradient-red text-white w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-center hover:scale-105 transition-transform shadow-[0_0_20px_rgba(220,38,38,0.4)] uppercase tracking-widest text-sm"
             >
               View My Work
             </button>
             <button
               onClick={() => document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })}
-              className="group relative w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-xl font-bold text-center transition-all overflow-hidden border border-white/20 bg-white/5 hover:bg-white/10 text-white hover:border-red-500/50 uppercase tracking-widest text-sm"
+              className="group relative w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-center transition-all border border-white/20 bg-white/5 hover:bg-white/10 text-white uppercase tracking-widest text-sm"
             >
-              <span className="relative z-10 transition-transform group-hover:translate-x-1 inline-block">
+              <span className="relative z-10 inline-block transition-transform group-hover:translate-x-1">
                 Hire Me &rarr;
               </span>
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        {/* Right - Premium IDE Visual (Now beautifully displayed on Mobile!) */}
+        {/* Right - Premium IDE Visual */}
         <CodeWindow />
 
       </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        className="hidden lg:block absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-20"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ repeat: Infinity, duration: 2 }}
-      >
+      <div className="hidden lg:block absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce">
         <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center pt-2 backdrop-blur-sm bg-black/20">
           <div className="w-1 h-2 bg-red-600 rounded-full" />
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

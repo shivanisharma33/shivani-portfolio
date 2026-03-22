@@ -11,8 +11,8 @@ import ContactSection from "@/components/ContactSection";
 const Index = () => {
   return (
     <div className="bg-background text-foreground min-h-screen relative">
-      {/* Grain overlay */}
-      <div className="noise-overlay" />
+      {/* Grain overlay - Hidden on mobile to prevent extreme GPU render lag during fast scrolling */}
+      <div className="noise-overlay hidden sm:block" />
       
       <CustomCursor />
       <FloatingNavbar />
