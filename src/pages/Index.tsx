@@ -9,7 +9,7 @@ import ContactSection from "@/components/ContactSection";
 
 const Index = () => {
   return (
-    <div className="bg-background text-foreground min-h-screen relative">
+    <div className="bg-background text-foreground min-h-screen relative w-full overflow-x-hidden max-w-[100vw]">
       {/* Grain overlay - Hidden on mobile to prevent extreme GPU render lag during fast scrolling */}
       <div className="noise-overlay hidden sm:block" />
       
