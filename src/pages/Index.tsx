@@ -1,5 +1,4 @@
 import CustomCursor from "@/components/CustomCursor";
-import FloatingNavbar from "@/components/FloatingNavbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import SkillsSection from "@/components/SkillsSection";
@@ -15,7 +14,6 @@ const Index = () => {
       <div className="noise-overlay hidden sm:block" />
       
       <CustomCursor />
-      <FloatingNavbar />
       
       <main>
         <HeroSection />
