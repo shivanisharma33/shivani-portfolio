@@ -49,13 +49,13 @@ const CodeWindow = () => (
         </div>
       </div>
       
-      {/* Floating Elements (Hidden on extremely small screens to stop horizontal overflow) */}
-      <motion.div className="hidden sm:flex absolute -right-6 -top-6 w-14 h-14 rounded-xl bg-gradient-to-br from-red-500/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-3xl shadow-xl"
+      {/* Floating Elements (Visible on all screens!) */}
+      <motion.div className="flex absolute -right-2 sm:-right-6 -top-6 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-red-500/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-2xl sm:text-3xl shadow-xl z-30"
         animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity, delay: 1 }}
       >
         ⚛️
       </motion.div>
-      <motion.div className="hidden sm:flex absolute -left-8 bottom-16 w-14 h-14 rounded-xl bg-gradient-to-br from-red-600/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-3xl shadow-xl"
+      <motion.div className="flex absolute -left-4 sm:-left-8 bottom-16 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-red-600/20 to-black border border-white/10 backdrop-blur-xl items-center justify-center text-2xl sm:text-3xl shadow-xl z-30"
         animate={{ y: [0, 15, 0], rotate: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
       >
         🎨
@@ -100,8 +100,8 @@ const HeroSection = () => {
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
       />
       
-      {/* Animated Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
+      {/* Animated Floating Particles (Visible everywhere now) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none block">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
